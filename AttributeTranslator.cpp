@@ -7,6 +7,7 @@
 
 #include "AttributeTranslator.h"
 #include <fstream>
+#include <iostream>
 AttributeTranslator::AttributeTranslator()
 {
     
@@ -28,7 +29,7 @@ bool AttributeTranslator::Load(std::string filename)
         int comma = 0;
         std::string source;
         std::string compatible_attribute;
-        while(line[i] != '\n')
+        while(line[i] != '\n' && i<line.size())
         {
             if(line[i] == ',' && track == 1)//separator between source and compatible
             {
@@ -48,15 +49,20 @@ bool AttributeTranslator::Load(std::string filename)
         }
         std::string compatible_value = line.substr(comma+1, i);
         std::vector<AttValPair>* temp = SourceMatch.search(source);
+        std::string sourceCompatible = source+compatible_attribute+compatible_value;
         AttValPair newPair = AttValPair(compatible_attribute, compatible_value);
-        if(temp!=nullptr)
+        if(temp!=nullptr)//if already in the radix tree
         {
-            temp->push_back(newPair);
+            if(unique.insert(sourceCompatible).second == true)
+            {
+                temp->push_back(newPair);
+            }
         }
         else
         {
             std::vector<AttValPair> newVector;
             newVector.push_back(newPair);
+            unique.insert(sourceCompatible);
             SourceMatch.insert(source, newVector);
         }
     }

@@ -33,8 +33,10 @@ void PersonProfile::AddAttValPair(const AttValPair& attval)//Still needs to chec
     std::set<std::string>* temp = AttValMap.search(attval.attribute);
     if(temp!=nullptr)
     {
-        temp->insert(attval.value);
-        pairs.push_back(attval);
+        if(temp->insert(attval.value).second == true)
+        {
+            pairs.push_back(attval);
+        }
     }
     else
     {

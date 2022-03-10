@@ -16,19 +16,19 @@
 #include <iostream>
 MatchMaker::MatchMaker(const MemberDatabase& mdb, const AttributeTranslator& at)
 {
-    database = mdb;
-    translator = at;
+    database = &mdb;
+    translator = &at;
 }
 
 std::vector<EmailCount> MatchMaker::IdentifyRankedMatches(std::string email, int threshold) const
 {
-    const PersonProfile* person  = database.GetMemberByEmail(email);
+    const PersonProfile* person  = database->GetMemberByEmail(email);
     std::set<AttValPair> totalPairs;//set so no duplicates 
     for(int i = 0;i<person->GetNumAttValPairs();i++)//gets all compatible pairs for that person
     {
         AttValPair attval;
         person->GetAttVal(i, attval);
-        std::vector<AttValPair> compatiblePairs = translator.FindCompatibleAttValPairs(attval);
+        std::vector<AttValPair> compatiblePairs = translator->FindCompatibleAttValPairs(attval);
         for(int k = 0;k<compatiblePairs.size();k++)
         {
             //std::cout << compatiblePairs[k].attribute << "," << compatiblePairs[k].value << std::endl;
@@ -44,7 +44,7 @@ std::vector<EmailCount> MatchMaker::IdentifyRankedMatches(std::string email, int
     it = totalPairs.begin();
     while(it!=totalPairs.end())//gets map with all emails and number of matches
     {
-        std::vector<std::string> matchingMembers = database.FindMatchingMembers(*it);
+        std::vector<std::string> matchingMembers = database->FindMatchingMembers(*it);
         for(int i = 0;i<matchingMembers.size();i++)
         {
             
@@ -65,7 +65,7 @@ std::vector<EmailCount> MatchMaker::IdentifyRankedMatches(std::string email, int
     mapit = emailToCount.begin();
     while(mapit!=emailToCount.end())//creates the emailCount vector
     {
-        if(mapit->second>=threshold)
+        if(mapit->second>=threshold && mapit->first != email)
         {
             EmailCount newPerson = EmailCount(mapit->first, mapit->second);
             compatiblePeople.push_back(newPerson);

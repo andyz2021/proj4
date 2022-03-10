@@ -8,7 +8,7 @@
 #include "MemberDatabase.h"
 #include "PersonProfile.h"
 #include <fstream>
-
+#include <algorithm>
 MemberDatabase::MemberDatabase()
 {
     
@@ -16,13 +16,13 @@ MemberDatabase::MemberDatabase()
 
 MemberDatabase::~MemberDatabase()
 {
-    //std::vector<PersonProfile*>::iterator it;
-    //for(it = people.begin();it!=people.end();)
-    //{
+    std::vector<PersonProfile*>::iterator it;
+    for(it = people.begin();it!=people.end();)
+    {
         
-        //delete *it;
-            //it = people.erase(it);
-    //}
+        delete *it;
+        it = people.erase(it);
+    }
 }
 
 bool MemberDatabase::LoadDatabase(std::string filename)
@@ -48,9 +48,12 @@ bool MemberDatabase::LoadDatabase(std::string filename)
             {
                 std::string attributeValue = member[i];
                 std::vector<std::string>* emails = pairToEmail.search(attributeValue);
-                if(emails!=nullptr)
+                if(emails!=nullptr)//if that attribute is already in the radixtree
                 {
-                    emails->push_back(email);
+                    if(std::find(emails->begin(),emails->end(), email)==emails->end())
+                    {
+                        emails->push_back(email);
+                    }
                 }
                 else
                 {
@@ -91,7 +94,7 @@ std::vector<std::string> MemberDatabase::FindMatchingMembers(const AttValPair& i
     }
     else
     {
-        std::vector<std::string> newVector;
+        std::vector<std::string> newVector;//return empty vector 
         return newVector;
     }
 }

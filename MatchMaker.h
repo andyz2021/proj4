@@ -17,8 +17,8 @@ public:
     MatchMaker(const MemberDatabase& mdb, const AttributeTranslator& at);
     std::vector<EmailCount> IdentifyRankedMatches(std::string email, int threshold) const;
 private:
-    MemberDatabase database;
-    AttributeTranslator translator;
+    const MemberDatabase* database;
+    const AttributeTranslator* translator;
 };
 
 #endif /* MatchMaker_h */
